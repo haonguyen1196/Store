@@ -15,14 +15,14 @@ import { useAppDispatch, useAppSelector } from "../store/store";
 import { setDarkMode } from "./uiSlice";
 
 const midLinks = [
-    { title: "catalog", path: "/catalog" },
-    { title: "about", path: "/about" },
-    { title: "contact", path: "/contact" },
+    { title: "sản phẩm", path: "/catalog" },
+    { title: "về chúng tôi", path: "/about" },
+    { title: "liên hệ", path: "/contact" },
 ];
 
 const rightLinks = [
-    { title: "login", path: "/login" },
-    { title: "register", path: "/register" },
+    { title: "đăng nhập", path: "/login" },
+    { title: "đăng ký", path: "/register" },
 ];
 
 const navStyles = {
@@ -31,6 +31,7 @@ const navStyles = {
     textDecoration: "none",
     "&:hover": { color: "grey.500" },
     "&.active": { color: "#baecf9" },
+    whiteSpace: "nowrap",
 };
 
 export default function NavBar() {

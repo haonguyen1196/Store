@@ -50,7 +50,12 @@ export default function ProductDetails() {
                         <TableBody>
                             {productDetails.map((detail, index) => (
                                 <TableRow key={index}>
-                                    <TableCell sx={{ fontWeight: "bold" }}>
+                                    <TableCell
+                                        sx={{
+                                            fontWeight: "bold",
+                                            whiteSpace: "nowrap",
+                                        }}
+                                    >
                                         {detail.label}
                                     </TableCell>
                                     <TableCell>{detail.value}</TableCell>
