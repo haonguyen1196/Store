@@ -19,7 +19,11 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>(); // gọi và tạo instance theo khai báo
 app.UseCors(opt =>
 {
-    opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("https://localhost:3000");
+    opt.AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials() // cho phép gửi cookie về cho client
+    .WithOrigins("https://localhost:3000")
+    .WithExposedHeaders("Pagination"); // cho client đọc các header
 });
 
 app.MapControllers();
