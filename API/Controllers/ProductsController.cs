@@ -10,7 +10,7 @@ namespace API.Controllers
     public class ProductsController(StoreContext context) : BaseApiController
     {
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts([FromQuery] ProductParams productParams)
+        public async Task<ActionResult<List<Product>>> GetProducts([FromQuery] ProductParams productParams) //[FromQuery] do sử dụng class để nhận dữ liệu cho gọn
         {
             var query = context.Products
                 .Sort(productParams.OrderBy)

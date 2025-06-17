@@ -44,8 +44,18 @@ export const baseQueryWithErrorHandling = async (
                 }
                 break;
             case 401:
-                if (typeof responseData === "object" && "title" in responseData)
-                    toast.error(responseData.title);
+                if (
+                    typeof responseData === "object" &&
+                    "title" in responseData
+                ) {
+                    const title =
+                        responseData.title === "Unauthorized"
+                            ? "Email hoặc mật khẩu không đúng"
+                            : responseData.title;
+
+                    toast.error(title);
+                }
+
                 break;
             case 404:
                 if (typeof responseData === "object" && "title" in responseData)

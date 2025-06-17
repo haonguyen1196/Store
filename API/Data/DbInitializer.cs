@@ -1,5 +1,6 @@
 using System;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
@@ -12,13 +13,37 @@ public class DbInitializer
 
         var context = scope.ServiceProvider.GetRequiredService<StoreContext>()
             ?? throw new InvalidOperationException("không thể truy xuất store context"); // lấy store context ra
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>()
+            ?? throw new InvalidOperationException("không thể truy xuất user manager");
 
-        SeedData(context);
+        SeedData(context, userManager);
     }
 
-    private static void SeedData(StoreContext context) // private không gọi đc từ bên ngoài class, có static thì gọi không cần khởi tạo new
+    private static async void SeedData(StoreContext context, UserManager<User> userManager) // private không gọi đc từ bên ngoài class, có static thì gọi không cần khởi tạo new
     {
         context.Database.Migrate(); // chạy migration nếu chưa chạy
+
+        if (!userManager.Users.Any())
+        {
+            var user = new User
+            {
+                UserName = "bob@test.com",
+                Email = "bob@test.com"
+            };
+
+            await userManager.CreateAsync(user, "Pa$$w0rd");
+            await userManager.AddToRoleAsync(user, "Member");
+
+            var admin = new User
+            {
+                UserName = "admin@test.com",
+                Email = "admin@test.com"
+            };
+
+            await userManager.CreateAsync(admin, "Pa$$w0rd");
+            await userManager.AddToRolesAsync(admin, ["Member", "Admin"]);
+        }
+        ;
 
         if (context.Products.Any()) return; // nếu đã có giữ liệu rồi thì k làm gì cả
 

@@ -1,5 +1,7 @@
 using API.Data;
+using API.Entities;
 using API.Middleware;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,10 @@ builder.Services.AddDbContext<StoreContext>(opt =>
 });
 builder.Services.AddCors();
 builder.Services.AddTransient<ExceptionMiddleware>(); // đăng ký middleware vào DI và khai báo kiểu vòng đơi
+builder.Services.AddIdentityApiEndpoints<User>(opt =>
+{
+    opt.User.RequireUniqueEmail = true;
+}).AddRoles<IdentityRole>().AddEntityFrameworkStores<StoreContext>();// đăng ký cấu hình cho identity framework
 
 var app = builder.Build();
 
@@ -26,7 +32,12 @@ app.UseCors(opt =>
     .WithExposedHeaders("Pagination"); // cho client đọc các header
 });
 
+app.UseAuthentication(); // kích hoạt middleware xác thực (nhận thông tin từ http request header)
+app.UseAuthorization(); // kích hoạt middleware diểm tra phân quyền
+
 app.MapControllers();
+app.MapGroup("api").MapIdentityApi<User>();// cung cấp các đường dẫn api của identity framework cho ứng dụng
+
 
 DbInitializer.InitDb(app);
 
