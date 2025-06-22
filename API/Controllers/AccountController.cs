@@ -77,8 +77,23 @@ public class AccountController(SignInManager<User> signInManager) : BaseApiContr
 
         if (user == null) return Unauthorized();
 
-        // gán địa chỉ cho user
-        user.Address = address;
+        if (user.Address != null)
+        {
+            // Cập nhật các trường nếu đã có địa chỉ
+            user.Address.Name = address.Name;
+            user.Address.Line1 = address.Line1;
+            user.Address.Line2 = address.Line2;
+            user.Address.City = address.City;
+            user.Address.State = address.State;
+            user.Address.PostalCode = address.PostalCode;
+            user.Address.Country = address.Country;
+        }
+        else
+        {
+            // Tạo địa chỉ mới
+            user.Address = address;
+        }
+
 
         // Gọi phương thức tích hợp sẵn để cập nhật thông tin user vào DB
         var result = await signInManager.UserManager.UpdateAsync(user);

@@ -2,6 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "../../app/api/baseApi";
 import { Item, type Basket } from "../../app/models/basket";
 import type { Product } from "../../app/models/product";
+import Cookies from "js-cookie";
 
 function isBasketItem(product: Product | Item): product is Item {
     return (product as Item).quantity !== undefined;
@@ -68,7 +69,7 @@ export const basketApi = createApi({
                 try {
                     await queryFulfilled;
                     if (isNewBasket)
-                        dispatch(basketApi.util.invalidateTags(["Basket"]));
+                        dispatch(basketApi.util.invalidateTags(["Basket"])); // gọi lại dữ liệu mới cho basket
                 } catch (error) {
                     console.log(error);
                     patchResult.undo();
@@ -114,6 +115,21 @@ export const basketApi = createApi({
                 }
             },
         }),
+        clearBasket: builder.mutation<void, void>({
+            queryFn: () => ({ data: undefined }), // không gọi api
+            onQueryStarted: async (_, { dispatch }) => {
+                dispatch(
+                    basketApi.util.updateQueryData(
+                        "fetchBasket",
+                        undefined,
+                        (draft) => {
+                            draft.items = []; // xóa items trong cache của basket
+                        }
+                    )
+                );
+                Cookies.remove("basketId");
+            },
+        }),
     }),
 });
 
@@ -121,4 +137,5 @@ export const {
     useFetchBasketQuery,
     useAddBasketItemMutation,
     useRemoveBasketItemMutation,
+    useClearBasketMutation,
 } = basketApi;

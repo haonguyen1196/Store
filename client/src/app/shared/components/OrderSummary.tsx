@@ -7,18 +7,12 @@ import {
     Paper,
 } from "@mui/material";
 import { currencyFormat } from "../../../lib/util";
-import { useFetchBasketQuery } from "../../../features/basket/basketApi";
-import type { Item } from "../../models/basket";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useBasket } from "../../../lib/hooks/useBasket";
 
 export default function OrderSummary() {
-    const { data: basket } = useFetchBasketQuery();
-    const subtotal =
-        basket?.items.reduce(
-            (sum: number, item: Item) => sum + item.price * item.quantity,
-            0
-        ) || 0;
-    const deliveryFee = subtotal > 10000 ? 0 : 500;
+    const { subtotal, deliveryFee } = useBasket();
+    const location = useLocation();
 
     return (
         <Box
@@ -62,21 +56,23 @@ export default function OrderSummary() {
                     </Box>
                 </Box>
 
-                <Box mt={2}>
-                    <Button
-                        component={Link}
-                        to="/checkout"
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        sx={{ mb: 1 }}
-                    >
-                        Thanh toán
-                    </Button>
-                    <Button component={Link} to="/catalog" fullWidth>
-                        Tiếp tục mua sắm
-                    </Button>
-                </Box>
+                {location.pathname.includes("checkout") || (
+                    <Box mt={2}>
+                        <Button
+                            component={Link}
+                            to="/checkout"
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            sx={{ mb: 1 }}
+                        >
+                            Thanh toán
+                        </Button>
+                        <Button component={Link} to="/catalog" fullWidth>
+                            Tiếp tục mua sắm
+                        </Button>
+                    </Box>
+                )}
             </Paper>
 
             {/* Coupon Code Section */}
