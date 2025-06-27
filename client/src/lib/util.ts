@@ -1,3 +1,5 @@
+import type { PaymentSummary, ShippingAddress } from "../app/models/order";
+
 export function currencyFormat(amount: number) {
     return "$" + (amount / 100).toFixed(2);
 }
@@ -17,3 +19,12 @@ export function filterEmptyValues(values: object) {
     //Object.entries: biến object {a:1, b: 'react'} thành [[key, value], []]
     //Object.fromEntries biến mảng mảng quảy lại thành object
 }
+
+export const formatAddressString = (address: ShippingAddress) => {
+    return `${address?.name}, ${address?.line1}, ${address?.city} ,${address?.state}, ${address?.postal_code}, ${address?.country},`;
+};
+
+export const formatPaymentString = (card: PaymentSummary) => {
+    return `${card?.brand.toUpperCase()}, **** **** **** ${card?.last4},
+            Exp: ${card?.exp_month}/${card?.exp_year}`;
+};

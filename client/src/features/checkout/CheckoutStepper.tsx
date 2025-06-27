@@ -31,12 +31,14 @@ import { useBasket } from "../../lib/hooks/useBasket";
 import { currencyFormat } from "../../lib/util";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useCreateOrderMutation } from "../orders/orderApi";
 
 const steps = ["Địa chỉ", "Thanh toán", "Xem lại"];
 
 export default function CheckoutStepper() {
     const stripe = useStripe();
     const [activeStep, setActiveStep] = useState(0);
+    const [createOrder] = useCreateOrderMutation();
     const { data: { name, ...restAddress } = {} as Address, isLoading } =
         useFetchAddressQuery();
     const [updateAddress] = useUpdateUserAddressMutation();
@@ -83,6 +85,9 @@ export default function CheckoutStepper() {
             if (!confirmPayment || !basket?.clientSecret)
                 throw new Error("Không thể xử lý thanh toán");
 
+            const orderModel = await createOrderModel(); // lấy object chứa shipping và payment infor
+            const orderResult = await createOrder(orderModel); // gọi api tạo order
+
             const paymentResult = await stripe?.confirmPayment({
                 clientSecret: basket.clientSecret,
                 redirect: "if_required",
@@ -92,7 +97,7 @@ export default function CheckoutStepper() {
             }); //confirm payment
 
             if (paymentResult?.paymentIntent?.status === "succeeded") {
-                navigate("/checkout/success"); // thành công thì chuyển hướng trang
+                navigate("/checkout/success", { state: orderResult }); // thành công thì chuyển hướng trang
                 clearBasket(); // xóa cookie basket, và mutation cache basket items
             } else if (paymentResult?.error) {
                 throw new Error(paymentResult.error.message);
@@ -107,6 +112,16 @@ export default function CheckoutStepper() {
         } finally {
             setSubmitting(false); // không disable nút bấm nữa
         }
+    };
+
+    const createOrderModel = async () => {
+        const shippingAddress = await getStripeAddress();
+        const paymentSummary = confirmationToken?.payment_method_preview.card;
+
+        if (!shippingAddress || !paymentSummary)
+            throw new Error("Có lỗi khi tạo order");
+
+        return { shippingAddress, paymentSummary };
     };
 
     const getStripeAddress = async () => {

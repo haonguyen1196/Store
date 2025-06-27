@@ -124,6 +124,7 @@ export const basketApi = createApi({
                         undefined,
                         (draft) => {
                             draft.items = []; // xóa items trong cache của basket
+                            draft.basketId = "";
                         }
                     )
                 );
