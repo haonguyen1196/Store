@@ -31,7 +31,8 @@ jobs:
 
             - name: Publish .NET API
               run: |
-                  dotnet publish API/API.csproj -c Release -o ./publish
+                  cd API
+                  dotnet publish -c Release -o publish
 
             - name: Copy files to VPS via SSH
               uses: appleboy/scp-action@v0.1.4
