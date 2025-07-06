@@ -1,0 +1,55 @@
+name: CI/CD to VPS
+
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "22"
+
+            - name: Install & Build React client
+              run: |
+                  cd client
+                  npm install
+                  npm run build
+
+            - name: Set up .NET Core SDK
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: "9.0.x"
+
+            - name: Publish .NET API
+              run: |
+                  dotnet publish API/API.csproj -c Release -o ./publish
+
+            - name: Copy files to VPS via SSH
+              uses: appleboy/scp-action@v0.1.4
+              with:
+                  host: ${{ secrets.VPS_HOST }}
+                  username: ${{ secrets.VPS_USER }}
+                  key: ${{ secrets.VPS_SSH_KEY }}
+                  source: "./publish/*"
+                  target: "/var/www/store"
+                  rm: true
+
+            - name: SSH into VPS & restart Docker
+              uses: appleboy/ssh-action@v1.0.0
+              with:
+                  host: ${{ secrets.VPS_HOST }}
+                  username: ${{ secrets.VPS_USER }}
+                  key: ${{ secrets.VPS_SSH_KEY }}
+                  script: |
+                      cd /var/www/store
+                      docker-compose down
+                      docker-compose up --build -d

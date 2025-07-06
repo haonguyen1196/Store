@@ -7,7 +7,7 @@ namespace API.Data;
 
 public class DbInitializer
 {
-    public static void InitDb(WebApplication app)
+    public static async Task InitDb(WebApplication app)
     {
         using var scope = app.Services.CreateScope(); // tạo scope từ scope chính
 
@@ -16,10 +16,10 @@ public class DbInitializer
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>()
             ?? throw new InvalidOperationException("không thể truy xuất user manager");
 
-        SeedData(context, userManager);
+        await SeedData(context, userManager);
     }
 
-    private static async void SeedData(StoreContext context, UserManager<User> userManager) // private không gọi đc từ bên ngoài class, có static thì gọi không cần khởi tạo new
+    private static async Task SeedData(StoreContext context, UserManager<User> userManager) // private không gọi đc từ bên ngoài class, có static thì gọi không cần khởi tạo new
     {
         context.Database.Migrate(); // chạy migration nếu chưa chạy
 

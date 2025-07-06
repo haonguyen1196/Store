@@ -1,0 +1,28 @@
+services:
+    sql: # Định nghĩa một service tên là "sql" – đây là container chạy SQL Server
+        image: mcr.microsoft.com/mssql/server:2022-latest # Dùng image chính thức của SQL Server 2022
+        environment:
+            ACCEPT_EULA: "Y" # Chấp nhận điều khoản sử dụng của Microsoft
+            MSSQL_SA_PASSWORD: "Password@1" # Đặt mật khẩu cho tài khoản 'sa' (Super Admin)
+        ports:
+            - "1433:1433" # Mở cổng 1433 để máy bên ngoài có thể kết nối với SQL Server
+        volumes:
+            - sql-data:/var/opt/mssql # Gắn volume "sql-data" vào thư mục chứa dữ liệu SQL trong container
+        platform: "linux/amd64" # Đảm bảo dùng kiến trúc Linux/AMD64 – cần thiết nếu bạn dùng Mac M1/M2
+
+volumes:
+    sql-data: # Khai báo volume tên "sql-data" – nơi lưu dữ liệu để không mất khi container bị xóa
+
+# services:
+#     sql:
+#         image: mcr.microsoft.com/mssql/server:2022-latest
+#         environment:
+#             ACCEPT_EULA: "Y"
+#             MSSQL_SA_PASSWORD: "Password@1"
+#         ports:
+#             - "1433:1433"
+#         volumes:
+#             - sql-data:/var/opt/mssql
+#         platform: "linux/amd64"
+# volumes:
+#     sql-data:

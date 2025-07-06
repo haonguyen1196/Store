@@ -21,7 +21,6 @@ import {
     useFetchAddressQuery,
     useUpdateUserAddressMutation,
 } from "../account/accountApi";
-import type { Address } from "../../app/models/user";
 import type {
     ConfirmationToken,
     StripeAddressElementChangeEvent,
@@ -39,8 +38,7 @@ export default function CheckoutStepper() {
     const stripe = useStripe();
     const [activeStep, setActiveStep] = useState(0);
     const [createOrder] = useCreateOrderMutation();
-    const { data: { name, ...restAddress } = {} as Address, isLoading } =
-        useFetchAddressQuery();
+    const { data, isLoading } = useFetchAddressQuery();
     const [updateAddress] = useUpdateUserAddressMutation();
     const [saveAddressChecked, setSaveAddressChecked] = useState(false);
     const elements = useElements();
@@ -51,6 +49,12 @@ export default function CheckoutStepper() {
     const navigate = useNavigate();
     const [confirmationToken, setConfirmationToken] =
         useState<ConfirmationToken | null>(null);
+
+    let name, restAddress;
+
+    if (data) {
+        ({ name, ...restAddress } = data);
+    }
 
     const handleNext = async () => {
         if (activeStep === 0 && saveAddressChecked && elements) {

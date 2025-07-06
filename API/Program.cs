@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<StoreContext>(opt =>
 {
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddCors();
 builder.Services.AddTransient<ExceptionMiddleware>(); // đăng ký middleware vào DI và khai báo kiểu vòng đơi
@@ -25,6 +25,10 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>(); // gọi và tạo instance theo khai báo
+
+app.UseDefaultFiles(); // tự động tìm index.html trong wwwroot nếu URL không chỉ rõ file
+app.UseStaticFiles(); // phục vụ các file tĩnh (html, css, js...) trong wwwroot
+
 app.UseCors(opt =>
 {
     opt.AllowAnyHeader()
@@ -39,8 +43,9 @@ app.UseAuthorization(); // kích hoạt middleware diểm tra phân quyền
 
 app.MapControllers();
 app.MapGroup("api").MapIdentityApi<User>();// cung cấp các đường dẫn api của identity framework cho ứng dụng
+app.MapFallbackToController("Index", "Fallback"); // nếu không khớp route nào sẽ gọi action Index
 
 
-DbInitializer.InitDb(app);
+await DbInitializer.InitDb(app); // khởi tạo csdl bán đầu cho dự án
 
 app.Run();
