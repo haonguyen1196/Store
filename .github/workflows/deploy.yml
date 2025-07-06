@@ -31,8 +31,7 @@ jobs:
 
             - name: Publish .NET API
               run: |
-                  cd API
-                  dotnet publish -c Release -o publish
+                  dotnet publish API/API.csproj -c Release -o ./publish
 
             - name: Copy files to VPS via SSH
               uses: appleboy/scp-action@v0.1.4
@@ -40,7 +39,7 @@ jobs:
                   host: ${{ secrets.VPS_HOST }}
                   username: ${{ secrets.VPS_USER }}
                   key: ${{ secrets.VPS_SSH_KEY }}
-                  source: "./*"
+                  source: "./publish/**"
                   target: "/var/www/store/publish"
                   rm: true
 
