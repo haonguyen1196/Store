@@ -46,6 +46,6 @@ app.MapGroup("api").MapIdentityApi<User>();// cung cấp các đường dẫn ap
 app.MapFallbackToController("Index", "Fallback"); // nếu không khớp route nào sẽ gọi action Index
 
 
-await DbInitializer.InitDb(app); // khởi tạo csdl bán đầu cho dự án
+//await DbInitializer.InitDb(app); // khởi tạo csdl bán đầu cho dự án
 
 app.Run();
