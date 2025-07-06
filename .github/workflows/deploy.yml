@@ -29,12 +29,16 @@ jobs:
               with:
                   dotnet-version: "9.0.x"
 
-            - name: Clean publish folder
-              run: rm -rf ./publish
-
             - name: Publish .NET API
               run: |
                   dotnet publish API/API.csproj -c Release -o ./publish
+
+            - name: Fix nested publish folder if exists
+              run: |
+                  if [ -d "publish/publish" ]; then
+                    mv publish/publish/* publish/
+                    rm -rf publish/publish
+                  fi
 
             - name: Copy files to VPS via SSH
               uses: appleboy/scp-action@v0.1.4
