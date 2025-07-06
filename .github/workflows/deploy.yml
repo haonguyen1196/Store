@@ -40,7 +40,7 @@ jobs:
                   username: ${{ secrets.VPS_USER }}
                   key: ${{ secrets.VPS_SSH_KEY }}
                   source: "./publish/*"
-                  target: "/var/www/store/public"
+                  target: "/var/www/store/publish"
                   rm: true
 
             - name: SSH into VPS & restart Docker
