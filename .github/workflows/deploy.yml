@@ -54,7 +54,7 @@ jobs:
 
                       if [ -d "./publish" ]; then
                         echo "có thư mục publish lồng bên trong"
-                        mv ./publish/* ./ || echo "thư mục publish con trống hoặc di chuyển trong thành công
+                        mv ./publish/* ./ || echo "thư mục publish con trống hoặc di chuyển trong thành công"
                         rm -rf ./publish
                       fi
 
