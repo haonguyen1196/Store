@@ -31,14 +31,7 @@ jobs:
 
             - name: Publish .NET API
               run: |
-                  dotnet publish API/API.csproj -c Release -o ../publish
-
-            - name: Fix nested publish folder if exists
-              run: |
-                  if [ -d "../publish/publish" ]; then
-                    mv ../publish/publish/* ../publish/
-                    rm -rf ../publish/publish
-                  fi
+                  dotnet publish API/API.csproj -c Release -o ./publish
 
             - name: Copy files to VPS via SSH
               uses: appleboy/scp-action@v0.1.4
@@ -46,7 +39,7 @@ jobs:
                   host: ${{ secrets.VPS_HOST }}
                   username: ${{ secrets.VPS_USER }}
                   key: ${{ secrets.VPS_SSH_KEY }}
-                  source: "../publish/*"
+                  source: "./publish/*"
                   target: "/var/www/store/publish"
                   rm: true
 
@@ -57,6 +50,14 @@ jobs:
                   username: ${{ secrets.VPS_USER }}
                   key: ${{ secrets.VPS_SSH_KEY }}
                   script: |
+                      cd /var/www/store/publish
+
+                      if [ -d "./publish" ]; then
+                        echo "có thư mục publish lồng bên trong"
+                        mv ./publish/* ./ || echo "thư mục publish con trống hoặc di chuyển trong thành công
+                        rm -rf ./publish
+                      fi
+
                       cd /var/www/store
                       docker-compose down
                       docker-compose up --build -d
