@@ -92,7 +92,7 @@ namespace API.Controllers
                 var imageResult = await imageService.AddImageAsync(updateProductDto.File);
 
                 if (imageResult.Error != null)
-                    BadRequest(imageResult.Error.Message);
+                    return BadRequest(imageResult.Error.Message);
 
                 if (!string.IsNullOrEmpty(product.publicId))
                     await imageService.DeleteImageAsync(product.publicId); // xóa ảnh của sản phẩm trên cloudinary

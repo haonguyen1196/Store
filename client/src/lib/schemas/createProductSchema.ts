@@ -1,14 +1,8 @@
 import { z } from "zod";
 
-const fileSchema = z
-    .instanceof(File)
-    .refine((file) => file.size > 0, {
-        message: "Vui lòng tải hình ảnh sản phẩm",
-    })
-    .transform((file) => ({
-        ...file,
-        preview: URL.createObjectURL(file),
-    }));
+const fileSchema = z.instanceof(File).refine((file) => file.size > 0, {
+    message: "Vui lòng tải hình ảnh sản phẩm",
+});
 
 export const createProductSchema = z
     .object({
