@@ -10,7 +10,7 @@ import { useFetchFiltersQuery } from "../catalog/catalogApi";
 import AppSelectInput from "../../app/shared/components/AppSelectInput";
 import AppDropzone from "../../app/shared/components/AppDropzone";
 import type { Product } from "../../app/models/product";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useCreateProductMutation, useUpdateProductMutation } from "./adminApi";
 import { handleApiError } from "../../lib/util.ts";
 
@@ -40,16 +40,23 @@ export default function ProductForm({
     });
 
     const watchFile = watch("file"); // xem trước ảnh người dùng chọn
+
     const { data } = useFetchFiltersQuery();
     const [createProduct] = useCreateProductMutation();
     const [updateProduct] = useUpdateProductMutation();
+    const [preview, setPreview] = useState<string>("");
 
     useEffect(() => {
-        if (product) reset(product); // dùng để tải dự liệu edit vào form
+        if (product) reset(product, { keepDirtyValues: true }); // dùng để tải dự liệu edit vào form
 
-        return () => {
-            if (watchFile) URL.revokeObjectURL(watchFile.preview); // thu hồi dữ liệu xem trước mỗi khi di chuyển component
-        };
+        if (watchFile) {
+            const previewUrl = URL.createObjectURL(watchFile);
+            setPreview(previewUrl);
+
+            return () => {
+                if (watchFile) URL.revokeObjectURL(previewUrl); // thu hồi dữ liệu xem trước mỗi khi di chuyển component
+            };
+        }
     }, [product, reset, watchFile]);
 
     const createFormData = (items: FieldValues) => {
@@ -64,8 +71,8 @@ export default function ProductForm({
     const onSubmit = async (data: CreateProductSchema) => {
         try {
             const formData = createFormData(data);
-
-            if (watchFile) formData.append("file", watchFile); // react hook form k tự động lấy file ảnh phải thêm thủ công
+            // if (watchFile instanceof File) formData.append("file", watchFile);
+            // react hook form k tự động lấy file ảnh phải thêm thủ công
 
             if (product)
                 await updateProduct({
@@ -158,9 +165,9 @@ export default function ProductForm({
                         justifyContent="space-between"
                     >
                         <AppDropzone name="file" control={control} />
-                        {watchFile ? (
+                        {preview ? (
                             <img
-                                src={watchFile.preview}
+                                src={preview}
                                 alt="hình ảnh xem trước"
                                 style={{ maxHeight: 200 }}
                             />

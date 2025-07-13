@@ -62,7 +62,10 @@ export default function InventoryPage() {
                     Thống kê sản phẩm
                 </Typography>
                 <Button
-                    onClick={() => setEditMode(true)}
+                    onClick={() => {
+                        setSelectedProduct(null);
+                        setEditMode(true);
+                    }}
                     sx={{ m: 2 }}
                     size="large"
                     variant="contained"
