@@ -1,3 +1,4 @@
+import type { FieldError, Path, UseFormSetError } from "react-hook-form";
 import type { PaymentSummary, ShippingAddress } from "../app/models/order";
 
 export function currencyFormat(amount: number) {
@@ -28,3 +29,23 @@ export const formatPaymentString = (card: PaymentSummary) => {
     return `${card?.brand.toUpperCase()}, **** **** **** ${card?.last4},
             Exp: ${card?.exp_month}/${card?.exp_year}`;
 };
+
+export function handleApiError<T extends FieldError>(
+    error: unknown,
+    setError: UseFormSetError<T>,
+    fieldNames: Path<T>[]
+) {
+    const apiError = (error as { message: string }) || {};
+
+    if (apiError.message && typeof apiError.message === "string") {
+        const errorArray = apiError.message.split(","); //cắt cuỗi thành mảng
+
+        errorArray.forEach((e) => {
+            const matchedField = fieldNames.find((fieldName) =>
+                e.toLowerCase().includes(fieldName.toString().toLowerCase())
+            ); // tìm lỗi tương ứng với field name
+
+            if (matchedField) setError(matchedField, { message: e.trim() }); // gán lỗi theo field name
+        });
+    }
+} // hàm hiển thị lỗi validate form
