@@ -12,5 +12,14 @@ export default function RequireAuth() {
         // 'state' được dùng để lưu vị trí cũ => sau khi login có thể quay lại
     }
 
+    const adminRoutes = ["/inventory", "/admin-dashboard"];
+
+    if (
+        adminRoutes.includes(location.pathname) &&
+        !user.roles.includes("Admin")
+    ) {
+        return <Navigate to="/" replace />;
+    }
+
     return <Outlet />;
 }
