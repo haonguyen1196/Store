@@ -1,4 +1,4 @@
-import type { FieldError, Path, UseFormSetError } from "react-hook-form";
+import type { FieldError, UseFormSetError } from "react-hook-form";
 import type { PaymentSummary, ShippingAddress } from "../app/models/order";
 
 export function currencyFormat(amount: number) {
@@ -33,7 +33,7 @@ export const formatPaymentString = (card: PaymentSummary) => {
 export function handleApiError<T extends FieldError>(
     error: unknown,
     setError: UseFormSetError<T>,
-    fieldNames: Path<T>[]
+    fieldNames: string[]
 ) {
     const apiError = (error as { message: string }) || {};
 
