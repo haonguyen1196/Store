@@ -47,7 +47,7 @@ export default function ProductForm({
     const [preview, setPreview] = useState<string>("");
 
     useEffect(() => {
-        if (product) reset(product, { keepDirtyValues: true }); // dùng để tải dự liệu edit vào form
+        if (product) reset(product, { keepDirtyValues: true }); // dùng để tải dự liệu edit vào form, k reset input file
 
         if (watchFile) {
             const previewUrl = URL.createObjectURL(watchFile);
