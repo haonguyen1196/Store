@@ -8,6 +8,7 @@ import {
 import NavBar from "./NavBar";
 import { Outlet, ScrollRestoration } from "react-router-dom";
 import { useAppSelector } from "../store/store";
+import Breadcrumb from "./Breadcrumb";
 
 function App() {
     const { darkMode } = useAppSelector((state) => state.ui);
@@ -38,6 +39,7 @@ function App() {
                 }}
             >
                 <Container maxWidth="xl" sx={{ mt: 8 }}>
+                    <Breadcrumb />
                     <Outlet />
                 </Container>
             </Box>

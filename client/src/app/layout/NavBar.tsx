@@ -19,8 +19,8 @@ import { useUserInfoQuery } from "../../features/account/accountApi";
 
 const midLinks = [
     { title: "sản phẩm", path: "/catalog" },
-    { title: "về chúng tôi", path: "/about" },
-    { title: "liên hệ", path: "/contact" },
+    { title: "về chúng tôi", path: "/" },
+    { title: "liên hệ", path: "/" },
 ];
 
 const rightLinks = [

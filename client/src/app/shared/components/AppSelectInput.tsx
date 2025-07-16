@@ -1,10 +1,4 @@
-import {
-    FormControl,
-    FormHelperText,
-    InputLabel,
-    MenuItem,
-    Select,
-} from "@mui/material";
+import { Autocomplete, FormControl, TextField } from "@mui/material";
 import type { SelectInputProps } from "@mui/material/Select/SelectInput";
 import {
     useController,
@@ -22,11 +16,11 @@ type Props<T extends FieldValues> = {
 export default function AppSelectInput<T extends FieldValues>(props: Props<T>) {
     const { fieldState, field } = useController({
         ...props,
-    });
+    }); // useController để lấy fieldState và field từ react-hook-form, hook này giúp kết nối input với form
 
     return (
         <FormControl fullWidth error={!!fieldState.error}>
-            <InputLabel>{props.label}</InputLabel>
+            {/* <InputLabel>{props.label}</InputLabel>
             <Select
                 value={field.value || ""}
                 label={props.label}
@@ -38,7 +32,26 @@ export default function AppSelectInput<T extends FieldValues>(props: Props<T>) {
                     </MenuItem>
                 ))}
             </Select>
-            <FormHelperText>{fieldState.error?.message}</FormHelperText>
+            <FormHelperText>{fieldState.error?.message}</FormHelperText> */}
+            <Autocomplete
+                freeSolo
+                options={props.items}
+                value={field.value || ""}
+                onChange={(_, newValue) => field.onChange(newValue)}
+                onInputChange={(_, newInputValue, reason) => {
+                    if (reason === "input") {
+                        field.onChange(newInputValue);
+                    }
+                }}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label={props.label}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                    />
+                )}
+            />
         </FormControl>
     );
 }

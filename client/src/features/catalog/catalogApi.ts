@@ -8,6 +8,7 @@ import type { Pagination } from "../../app/models/pagination";
 export const catalogApi = createApi({
     reducerPath: "catalogApi",
     baseQuery: baseQueryWithErrorHandling,
+    tagTypes: ["Filters"],
     endpoints: (builder) => ({
         fetchProducts: builder.query<
             { items: Product[]; pagination: Pagination },
@@ -38,6 +39,7 @@ export const catalogApi = createApi({
             void
         >({
             query: () => "products/filters",
+            providesTags: ["Filters"], // cung cấp tag để invalidates cache khi có thay đổi
         }),
     }),
 });

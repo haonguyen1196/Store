@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "../../app/api/baseApi";
 import type { Product } from "../../app/models/product";
+import { catalogApi } from "../catalog/catalogApi";
 
 export const adminApi = createApi({
     reducerPath: "adminApi",
@@ -13,6 +14,14 @@ export const adminApi = createApi({
                     method: "POST",
                     body: data,
                 };
+            },
+            onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+                try {
+                    await queryFulfilled;
+                    dispatch(catalogApi.util.invalidateTags(["Filters"]));
+                } catch (error) {
+                    console.log(error);
+                }
             },
         }),
         updateProduct: builder.mutation<void, { id: number; data: FormData }>({
