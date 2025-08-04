@@ -7,6 +7,7 @@ import { useDropzone } from "react-dropzone";
 import { useCallback } from "react";
 import { UploadFile } from "@mui/icons-material";
 import { FormControl, FormHelperText, Typography } from "@mui/material";
+import useDeviceSize from "../../../lib/hooks/useDeviceSize";
 
 type Props<T extends FieldValues> = {
     name: keyof T;
@@ -16,6 +17,7 @@ export default function AppDropzone<T extends FieldValues>(props: Props<T>) {
     const { fieldState, field } = useController({
         ...props,
     });
+    const { isMobile } = useDeviceSize();
 
     const onDrop = useCallback(
         (acceptedFiles: File[]) => {
@@ -36,13 +38,15 @@ export default function AppDropzone<T extends FieldValues>(props: Props<T>) {
 
     const dzStyles = {
         display: "flex",
+        flexDirection: "column" as const,
         border: "dashed 2px #767676",
         borderColor: "#767676",
         borderRadius: "5px",
-        paddingTop: "30px",
         alignItems: "center",
-        height: 200,
-        width: 500,
+        justifyContent: "center",
+        height: "100%", // Fill parent height
+        width: "100%", // Fill parent width
+        padding: isMobile ? "16px" : "30px",
     };
 
     const dzActive = {
@@ -50,14 +54,21 @@ export default function AppDropzone<T extends FieldValues>(props: Props<T>) {
     };
 
     return (
-        <div {...getRootProps()}>
+        <div {...getRootProps()} style={{ height: "100%", width: "100%" }}>
             <FormControl
                 style={isDragActive ? { ...dzStyles, ...dzActive } : dzStyles}
                 error={!!fieldState.error}
             >
                 <input {...getInputProps()} />
-                <UploadFile sx={{ fontSize: "100px" }} />
-                <Typography variant="h4">Kéo hình ảnh vào đây</Typography>
+                <UploadFile
+                    sx={{
+                        fontSize: isMobile ? "60px" : "100px",
+                        mb: 1,
+                    }}
+                />
+                <Typography variant={isMobile ? "h6" : "h4"} textAlign="center">
+                    Kéo hình ảnh vào đây
+                </Typography>
                 <FormHelperText>{fieldState.error?.message}</FormHelperText>
             </FormControl>
         </div>

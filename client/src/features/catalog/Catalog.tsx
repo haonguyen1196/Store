@@ -43,7 +43,7 @@ export default function Catalog() {
                             position: "absolute",
                             top: -55,
                             right: 0,
-                            zIndex: 999999,
+                            zIndex: 10,
                         }}
                     >
                         <Button

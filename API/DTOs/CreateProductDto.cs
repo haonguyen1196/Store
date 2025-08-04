@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using API.Entities;
 
 namespace API.DTOs;
 
@@ -17,6 +18,10 @@ public class CreateProductDto
 
     [Required]
     public IFormFile File { get; set; } = null!;
+
+    public List<IFormFile>? AdditionalFiles { get; set; }
+
+    public string? ImageOrdersJson { get; set; }
 
     [Required]
     public string Type { get; set; } = string.Empty;

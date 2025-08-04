@@ -5,7 +5,7 @@ export default function useDeviceSize() {
 
     return {
         isMobile: useMediaQuery(theme.breakpoints.down("sm")),
-        isTablet: useMediaQuery(theme.breakpoints.between("sm", "md")),
+        isTablet: useMediaQuery(theme.breakpoints.down("md")),
         isDesktop: useMediaQuery(theme.breakpoints.up("md")),
         isLargeScreen: useMediaQuery(theme.breakpoints.up("lg")),
     };

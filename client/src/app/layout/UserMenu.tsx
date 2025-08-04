@@ -8,9 +8,16 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import type { User } from "../models/user";
-import { History, Inventory, Logout, Person } from "@mui/icons-material";
+import {
+    AccountCircle,
+    History,
+    Inventory,
+    Logout,
+    Person,
+} from "@mui/icons-material";
 import { useLogoutMutation } from "../../features/account/accountApi";
 import { Link } from "react-router-dom";
+import useDeviceSize from "../../lib/hooks/useDeviceSize";
 
 type Props = {
     user: User;
@@ -23,6 +30,7 @@ export default function UserMenu({ user }: Props) {
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
+    const { isMobile } = useDeviceSize();
 
     const handleClose = () => {
         setAnchorEl(null);
@@ -30,39 +38,61 @@ export default function UserMenu({ user }: Props) {
 
     return (
         <div>
-            <Button
-                onClick={handleClick}
-                color="inherit"
-                size="large"
-                sx={{ fontSize: "1.1rem" }}
-            >
-                {user.email}
-            </Button>
+            {isMobile ? (
+                <Button
+                    startIcon={<AccountCircle />}
+                    color="inherit"
+                    onClick={handleClick}
+                    sx={{
+                        minWidth: "auto",
+                        px: 1,
+                        "& .MuiButton-startIcon": {
+                            margin: 0,
+                        },
+                    }}
+                ></Button>
+            ) : (
+                <Button
+                    onClick={handleClick}
+                    color="inherit"
+                    size="large"
+                    sx={{ fontSize: "1.1rem" }}
+                >
+                    {user.email}
+                </Button>
+            )}
+
             <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                 slotProps={{
                     list: {
                         "aria-labelledby": "basic-button",
                     },
                 }}
             >
-                <MenuItem>
+                <MenuItem onClick={handleClose}>
                     <ListItemIcon>
                         <Person />
                     </ListItemIcon>
                     <ListItemText>Hồ sơ</ListItemText>
                 </MenuItem>
-                <MenuItem component={Link} to="/orders">
+                <MenuItem component={Link} to="/orders" onClick={handleClose}>
                     <ListItemIcon>
                         <History />
                     </ListItemIcon>
                     <ListItemText>Đơn hàng</ListItemText>
                 </MenuItem>
                 {user.roles.includes("Admin") && (
-                    <MenuItem component={Link} to="/inventory">
+                    <MenuItem
+                        component={Link}
+                        to="/inventory"
+                        onClick={handleClose}
+                    >
                         <ListItemIcon>
                             <Inventory />
                         </ListItemIcon>
@@ -70,7 +100,12 @@ export default function UserMenu({ user }: Props) {
                     </MenuItem>
                 )}
                 <Divider />
-                <MenuItem onClick={logout}>
+                <MenuItem
+                    onClick={() => {
+                        logout({});
+                        handleClose();
+                    }}
+                >
                     <ListItemIcon>
                         <Logout />
                     </ListItemIcon>

@@ -18,6 +18,11 @@ public class UpdateProductDto
 
     public IFormFile? File { get; set; }
 
+
+    public List<IFormFile>? AdditionalFiles { get; set; }
+
+    public string? ImageOrdersJson { get; set; }
+
     [Required]
     public string Type { get; set; } = string.Empty;
 
