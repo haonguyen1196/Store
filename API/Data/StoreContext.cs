@@ -12,6 +12,7 @@ namespace API.Data;
 public class StoreContext(DbContextOptions options) : IdentityDbContext<User>(options)
 {
     public required DbSet<Product> Products { get; set; }
+    public required DbSet<ProductImage> ProductImage { get; set; }
     public required DbSet<Basket> Baskets { get; set; } // them dong nay truoc khi chay: dotnet ef migrations add NameFile
     public required DbSet<Order> Orders { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)

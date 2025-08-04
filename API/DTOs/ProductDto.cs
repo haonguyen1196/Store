@@ -1,8 +1,8 @@
 using System;
 
-namespace API.Entities;
+namespace API.DTOs;
 
-public class Product
+public class ProductDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }
@@ -12,7 +12,7 @@ public class Product
     public required string Type { get; set; }
     public required string Brand { get; set; }
     public int QuantityInStock { get; set; }
-    public string? publicId { get; set; }
+    public string? PublicId { get; set; }
 
-    public List<ProductImage> Images { get; set; } = []; // Navigation property to ProductImage
+    public List<ProductImageDto> Images { get; set; } = [];
 }

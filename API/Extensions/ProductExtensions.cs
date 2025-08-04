@@ -1,4 +1,5 @@
 using System;
+using API.DTOs;
 using API.Entities;
 
 namespace API.Extensions;
@@ -45,5 +46,29 @@ public static class ProductExtensions
         query = query.Where(x => typeList.Count == 0 || typeList.Contains(x.Type.ToLower()));
 
         return query;
+    }
+
+    public static ProductDto ToDto(this Product product)
+    {
+        return new ProductDto
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            PictureUrl = product.PictureUrl,
+            Type = product.Type,
+            Brand = product.Brand,
+            QuantityInStock = product.QuantityInStock,
+            PublicId = product.publicId,
+            Images = product.Images.Select(image => new ProductImageDto
+            {
+                Id = image.Id,
+                Url = image.Url,
+                Order = image.Order,
+                PublicId = image.PublicId,
+                ProductId = image.ProductId
+            }).OrderBy(x => x.Order).ToList()
+        };
     }
 }

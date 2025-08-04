@@ -9,10 +9,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFetchFiltersQuery } from "../catalog/catalogApi";
 import AppSelectInput from "../../app/shared/components/AppSelectInput";
 import AppDropzone from "../../app/shared/components/AppDropzone";
+import AppDropzoneMultiple from "../../app/shared/components/AppDropzoneMultiple";
 import type { Product } from "../../app/models/product";
 import { useEffect, useState } from "react";
 import { useCreateProductMutation, useUpdateProductMutation } from "./adminApi";
 import { handleApiError } from "../../lib/util.ts";
+import useDeviceSize from "../../lib/hooks/useDeviceSize.ts";
 
 type Props = {
     setEditMode: (value: boolean) => void;
@@ -45,6 +47,9 @@ export default function ProductForm({
     const [createProduct] = useCreateProductMutation();
     const [updateProduct] = useUpdateProductMutation();
     const [preview, setPreview] = useState<string>("");
+    const [additionalFiles, setAdditionalFiles] = useState<File[]>([]);
+    const [imageOrder, setImageOrder] = useState<number[]>([]);
+    const { isMobile } = useDeviceSize();
 
     useEffect(() => {
         if (product) reset(product, { keepDirtyValues: true }); // dùng để tải dự liệu edit vào form, k reset input file
@@ -71,8 +76,24 @@ export default function ProductForm({
     const onSubmit = async (data: CreateProductSchema) => {
         try {
             const formData = createFormData(data);
-            // if (watchFile instanceof File) formData.append("file", watchFile);
-            // react hook form k tự động lấy file ảnh phải thêm thủ công
+
+            // Thêm nhiều ảnh chi tiết
+            additionalFiles.forEach((file) => {
+                formData.append(`additionalFiles`, file);
+            });
+
+            // Thêm thứ tự ảnh dưới dạng JSON string
+            if (imageOrder.length > 0) {
+                // Convert array [0, 1, 2] thành object {"0": 0, "1": 1, "2": 2}
+                const imageOrderObject: Record<string, number> = {};
+                imageOrder.forEach((order, index) => {
+                    imageOrderObject[index.toString()] = order;
+                });
+                formData.append(
+                    "imageOrdersJson",
+                    JSON.stringify(imageOrderObject)
+                );
+            }
 
             if (product)
                 await updateProduct({
@@ -95,6 +116,8 @@ export default function ProductForm({
                 "price",
                 "quantityInStock",
                 "type",
+                "additionalFiles",
+                "imageOrdersJson",
             ]);
         }
     };
@@ -158,7 +181,65 @@ export default function ProductForm({
                             rows={4}
                         />
                     </Grid2>
-                    <Grid2
+                    <Grid2 container spacing={isMobile ? 2 : 3} sx={{ mt: 1 }}>
+                        <Grid2 size={{ xs: 12, md: 6 }}>
+                            <Box
+                                sx={{
+                                    height: isMobile ? 120 : 300,
+                                    width: "100%",
+                                    mb: isMobile ? 2 : 0,
+                                }}
+                            >
+                                <AppDropzone name="file" control={control} />
+                            </Box>
+                        </Grid2>
+                        <Grid2
+                            size={{ xs: 12, md: 6 }}
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                        >
+                            {preview ? (
+                                <img
+                                    src={preview}
+                                    alt="hình ảnh xem trước"
+                                    style={{
+                                        height: isMobile ? 120 : 200,
+                                        width: "100%",
+                                        objectFit: "contain",
+                                        borderRadius: 8,
+                                    }}
+                                />
+                            ) : product ? (
+                                <img
+                                    src={product?.pictureUrl}
+                                    alt="hình ảnh xem trước"
+                                    style={{
+                                        height: isMobile ? 120 : 200,
+                                        width: "100%",
+                                        objectFit: "contain",
+                                        borderRadius: 8,
+                                    }}
+                                />
+                            ) : null}
+                        </Grid2>
+                    </Grid2>
+                    <Grid2 size={12}>
+                        <Typography variant="h6" sx={{ mb: 2 }}>
+                            Ảnh chi tiết sản phẩm
+                        </Typography>
+                        <AppDropzoneMultiple
+                            value={additionalFiles}
+                            existingImages={product?.images || []}
+                            onChange={(files, order) => {
+                                setAdditionalFiles(files);
+                                setImageOrder(order);
+                            }}
+                        />
+                    </Grid2>
+                    {/* <Grid2
                         size={12}
                         display="flex"
                         alignItems="center"
@@ -178,7 +259,7 @@ export default function ProductForm({
                                 style={{ maxHeight: 200 }}
                             />
                         ) : null}
-                    </Grid2>
+                    </Grid2> */}
                 </Grid2>
 
                 <Box
