@@ -15,7 +15,7 @@ export default function HomePage() {
                 minHeight={isMobile ? "60vh" : isTablet ? "70vh" : "80vh"}
             >
                 <img
-                    src="/images/hero1.jpg"
+                    src="/images/hero5.jpg"
                     alt="image"
                     style={{
                         position: "absolute",
